@@ -1,66 +1,43 @@
-import { Box, CardContent, CardMedia, Typography } from "@mui/material";
-import { CheckCircle } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Box } from "@mui/material";
+import { Videos, ChannelCard } from "./";
+import { fetchApi } from "../utils/FetchApi";
 
-import { demoProfilePicture } from "../utils/constants";
+const ChannelDetail = () => {
+  const [channelDetail, setChannelDetail] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const { id } = useParams();
+  // console.log(videos,'from channel detail');
+  useEffect(() => {
+    fetchApi(`channels?part=snippet&id=${id}`).then((data) => {
+      // console.log(data,'it is in channelDetail')
+      setChannelDetail(data?.items[0]);
+    });
 
-const ChannelDetail = ({ channelDetail }) => {
+    fetchApi(`search?channelId=${id}&part=snippet&order=date`).then((data) =>
+      setVideos(data?.items)
+    );
+  }, [id]);
+
   return (
-    <Box
-      sx={{
-        boxShadow: "none",
-        borderRadius: "20px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: { xs: "356px", md: "320px" },
-        height: "320px",
-        margin: "auto",
-      }}
-    >
-      <Link to={`/channel/${channelDetail?.id?.channelId}`}>
-        <CardContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            textAlign: "center",
-            color: "white",
+    <Box minHeight="95vh">
+      <Box>
+        <div
+          style={{
+            height: "300px",
+            background:
+              "linear-gradient(90deg, rgba(0,238,247,1) 0%, rgba(206,3,184,1) 100%, rgba(0,212,255,1) 100%)",
+            zIndex: 10,
           }}
-        >
-          <CardMedia
-            image={
-              channelDetail?.snippet?.thumbnail?.high?.url || demoProfilePicture
-            }
-            alt={channelDetail?.snippet?.title}
-            sx={{
-              borderRadius: "50%",
-              height: "180px",
-              width: "180px",
-              mb: 2,
-              border: "1px solid #e3e3e3",
-            }}
-          />
-          <Typography variant="h6">
-            {channelDetail?.snippet?.title}
-            <CheckCircle
-              sx={{
-                fontSize: 14,
-                color: "gray",
-                ml: "5px",
-              }}
-            />
-          </Typography>
-          {channelDetail?.statistics?.subscriberCount && (
-            <Typography>
-              {parseInt(
-                channelDetail?.statistics?.subscriberCount
-              ).toLocaleString()}
-              Subscribers
-            </Typography>
-          )}
-        </CardContent>
-      </Link>
+          channelCard
+        />
+        <ChannelCard channelDetail={channelDetail} marginTop="-110px" />
+      </Box>
+      <Box display="flex" p="2">
+        <Box sx={{ mr: { sm: "100px" } }} />
+        <Videos videos={videos} />
+      </Box>
     </Box>
   );
 };
