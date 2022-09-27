@@ -15,7 +15,8 @@ const Navbar = () => {
         top: 0,
         justifyContent: "space-between",
         background: "#000",
-      }}
+        zIndex:100
+      }}first
     >
       <Link to="/" style={{ display: "flex", alignItems: "center" }}>
         <img src={logo} alt="logo" height={45}/>
